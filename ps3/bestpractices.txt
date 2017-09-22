@@ -1,0 +1,18 @@
+Write programs for people, not computers
+Some codes may be tricky but very efficient, if we have to make every step clear and easy, the whole program may be tedious and inefficient.
+
+break programs up into easily understood tasks
+Too many tasks at the same time is difficult for people to use
+
+"Automate repetitive tasks" seem particularly compelling to me, it can save me lots of work and create much fewer errors.
+
+make incremental changes
+Sometimes we write codes just to finish a particular job and that won't change. So making incremental changes doesn't seem to make sense.
+
+
+Don't repeat yourself.
+Sometimes we need to replicate a particular part of codes for two functions. And it would be tedious and confusing(too many functions) if we write a new function for that part of codes.
+
+9.Document design and purpose not mechanics
+I think it is also useful to write inline documentation as it help other to understand what I want to do when the syntax is complicated.
+ 
