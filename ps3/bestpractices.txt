@@ -1,3 +1,4 @@
+The paper I read is "Best Practices for Scientific Computing"
 Write programs for people, not computers
 Some codes may be tricky but very efficient, if we have to make every step clear and easy, the whole program may be tedious and inefficient.
 
