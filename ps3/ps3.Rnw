@@ -1,0 +1,277 @@
+\documentclass{article}
+
+\begin{document}
+\section{Problem 2.a}
+<<>>=
+setwd("D:/Berkeley/ѧϰ/stat243ps/ps3")
+library(stringr)
+#library(Rcurl)
+URL<-"http://www.gutenberg.org/cache/epub/100/pg100.txt"
+originaltext<-readLines(URL)
+
+textbeginning<-grep("^1[[:digit:]]{3}",originaltext)
+textend<-grep("THE END",originaltext)
+
+if (length(textbeginning)==length(textend))
+  
+
+play<-list()
+for (i in 1:length(textbeginning)){
+  play[[i]]<-originaltext[textbeginning[i]:textend[i]]
+}
+
+#update the dimension of play ,textbeginning and textend
+#ignore the first and last piece
+play[length(textbeginning)]<-NULL
+play[1]<-NULL
+
+textbeginning<-textbeginning[-(length(play)+2)]
+textbeginning<-textbeginning[-1]
+
+textend<-textend[-(length(play)+2)]
+textend<-textend[-1]
+
+@
+
+\section{Problem 2.b}
+The playyear is the line with four digitals and the title is the first line in the play that contains words.
+
+To extract the play, I use the playyear to be the beginning part and "THE END" to be the end part. 
+
+I then tried to extract the number of acts by grepping the pattern with "ACT *. SCENE 1(or I).". But it seems weird that this way failed in the first play, where "SCENE 2" "SCENE3"... are also grepped.
+
+
+ <<>>=
+playyear<-list()
+playtitle<-list()
+playactnum<-list()
+playscenenum<-list()
+
+ for (i in 1:length(play)){
+    #grep the year of the play
+     playyear[i]<-originaltext[textbeginning[i]]
+     
+     #grep the title
+     titlelocation<-grep("^[a-zA-Z]",play[[i]])
+     playtitle[i]<-play[[i]][titlelocation[1]]
+     
+     #number of acts
+     #Using "SCENE 1." or "SCENE I." to detect the number of acts
+     tmp<-grep("^ *Act ([A-Z]{1,2})|[0-9]{1,2}\\. ((Scene 1)|(Scene I))\\.$",
+               play[[i]],ignore.case=TRUE)
+     #tmp<-grep("^ *Act ([A-Z]{1,2})|([0-9]{1,2})\\. Scene I\\.$",play[[i]],ignore.case=TRUE)
+     playactnum[i]<-length(tmp)
+     
+     #number of scenes 
+     tmp<-grep("scene ",play[[i]],ignore.case=TRUE)
+     playscenenum[i]<-length(tmp)     
+}
+playyear<-unlist(playyear)
+playtitle<-unlist(playtitle)
+playactnum<-unlist(playactnum)
+playscenenum<-unlist(playscenenum)
+playyear
+playtitle
+playactnum
+playscenenum
+@
+
+\section{Problem 2.c}
+
+To find the location of each spoken chunks, I first identified the location of each line start with the speaker. Then any lines betweem two speaker-line is belongs to one spoken chunk.
+
+<<>>=
+text<-list()
+chunktext<-list()
+chunklocation<-list()
+
+#define a function to find the location of text chunk in each play
+findlocation <- function(playindex){
+  #location<-grep("^ {0,3}[A-Z]+[a-z]*( [A-Z]+[a-z]*){0,2}\\. [A-Z][a-z]+",play[[playindex]])
+  location<-grep("^ {0,3}[A-Z]+[a-z]*( [A-Z]+[a-z]*){0,2}\\. [A-Z](([a-z]+)| |,)"
+                 ,play[[playindex]])
+  location[length(location)+1] <- length(play[[playindex]])-1
+  return(location)
+}
+
+#Using for loop to find the chunklocation in all plays and assign them to an list element
+chunklocation<-list()
+for (i in 1:length(play)){
+  chunklocation[[i]] <- findlocation(i)
+}
+
+
+#define a function to find the text chunk in each play
+findtext<-function(playindex,locationindex1,locationindex2){
+  text<-play[[playindex]][locationindex1:locationindex2]
+  return(text)
+}
+
+
+chunktext<-list()
+for (i in 1:length(play)){
+  chunktext[[i]] <- list()
+}
+
+#Using for loop to find the chunktext in all plays and assign them to an list element 
+for (i in 1:length(play)){
+  for (j in 1:(length(chunklocation[[i]])-1)){
+    chunktext[[i]][[j]] <- findtext(i,chunklocation[[i]][j],(chunklocation[[i]][j+1]-1))
+  }
+}
+
+
+
+@
+
+\section{Problem 2.d}
+\subsection{The number of unique speakers}
+
+I grepped the part before "." on the speaker-lines I found in problem 2.c. That part is the speaker names. I then use "unique" function to find the unique speaker names.
+
+
+<<>>=
+#The number of unique speakers
+firstline<-list()
+firstlinesplit<-list()
+speakers<-list()
+findspeakers<-function(inputplay){
+  for (i in 1:length(inputplay)){
+    firstline[[i]]<-inputplay[[i]][1]
+    firstlinesplit[[i]]<-strsplit(firstline[[i]],"\\.")
+    speakers[[i]]<-firstlinesplit[[i]][[1]][1]
+    speakers[[i]] <- gsub(" +","",speakers[[i]])
+  }
+    return(speakers)
+}
+#findspeakers(chunktext[[2]])
+speakerlist<-lapply(chunktext,findspeakers)
+uniquespeakers<-lapply(speakerlist,unique)
+unispeakernum<-unlist(lapply(uniquespeakers,length))
+@
+
+\subsection{The number of spoken chunks}
+
+I used lapply to find the length of spoken chunks in each play.
+
+<<>>=
+
+#number of spoken chunks in each play
+chunknum<-lapply(chunktext,length)
+chunknum<-unlist(chunknum)
+@
+
+\subsection{THe number of sentences and words spoken and average number of words per chunk}
+
+I used ".","?","!" to sperate every spoken chunks to find out the number of sentences; " " to separate every spoken chunks to find out the number of words. During the process, I also replace the irrelevant punctuation such as commas and periods but not apostrophes. 
+<<>>=
+namenum<-unlist(lapply(speakerlist,length))
+#number of sentences
+sentences<-list()
+countsentences<-function(inputchunk){
+  inputchunk<-unlist(inputchunk)
+  sentences <- unlist(strsplit(inputchunk,"\\.|\\?|!"))
+  return(length(sentences))
+}
+
+#Using the sentences number calculated by conutsentences minus the number of speaker names.
+chunksensnum<-unlist(lapply(chunktext,countsentences))
+chunksensnum<-chunksensnum-namenum
+
+
+#number of words
+words<-list()
+countwords<-function(inputchunk){
+  sum<-0
+  inputchunk<-unlist(inputchunk)
+  inputchunk <- gsub(",|/.|/?|!|:|;","",inputchunk)
+  words <- unlist(strsplit(inputchunk," {1,}"))
+  return(length(words))
+}
+
+chunkwordsnum<-unlist(lapply(chunktext,countwords))
+chunkwordsnum<-unlist(chunkwordsnum)-unlist(namenum)
+
+
+
+#average number of words per chunk
+avgwords<-chunkwordsnum/chunknum
+
+
+
+@
+
+
+\subsection{The number of unique words}
+
+I used the same way as above to find out the words in each play and "unique" them.
+
+<<>>=
+words<-list()
+countuniquewords<-function(inputchunk){
+  inputchunk<-unlist(inputchunk)
+  inputchunk <- gsub(",|/.|/?|!|:|;","",inputchunk)
+  words <- unlist(strsplit(inputchunk," {1,}"))
+  words<-unique(tolower(words))
+  words<-
+  return(length(words))
+}
+uniwordsnum<-unlist(lapply(chunktext,countuniquewords))
+uniwordsnum<-unlist(uniwordsnum)-unispeakernum
+@
+
+
+
+
+\subsection{Result Summary}
+
+Below is the result of summary statistics of each play.
+<<>>=
+#number of sentences
+chunksensnum
+
+#number of words
+chunkwordsnum
+
+#average number of words per chunk
+avgwords
+
+#number of unique words
+uniwordsnum
+@
+
+
+\section{Prblem 2.e}
+
+Based on the following picutures, we can tell that as tiime pass by, the sentences per chunk tends to increase, words per chunk mainly remians the same, average words per chunk tends to decrease then increase a bit, almost remain the same.
+<<>>=
+playyearnum<-unlist(playyear)
+plot(playyearnum,chunksensnum)
+plot(playyearnum,chunkwordsnum)
+plot(playyearnum,avgwords)
+plot(playyearnum,uniwordsnum)
+@
+
+\section{Problem 2.f}
+
+I include the fourth play in my analysis.
+
+\section{Problem 3.a}
+
+The fields for the class are playyear(named characteric vector), playtitle(named characteric vector),number of acts(named numberic vector), number of scenes(named numberic vector), spokenchunks(named characteric lists), speaker for each chunks(named characteric lists), number of unique speakers (named numberic vector), number of spoken chunks(named numberic vector), number of unique words(named numberic vector) .etc.
+
+\section{Problem 3.b}
+
+There are methods for the class, like to output part of a play, show the basics information of a play, etc.
+
+showplay:showing part of the play; input: number of play; create fields: playyear, playtitle, spoken chunks; output: playyear, playtitle, spoken chunks
+
+playstatistics: showing the relative play statistics; input: number of play; create fields: number of acts, number of scenes, number of unique speakers, number of spoken chunks, number of sentences, and words spoken and average number of words per chunk, number of unique words; output: the value of created fields
+
+playplot: showing the plot of summary statistics; input: number of play, play statistics; output: plot of the play statistics
+
+
+
+
+
+\end{document}
