@@ -1,0 +1,37 @@
+1.What are the goals of their simulation study and what are the metrics that they consider in assessing
+their method?
+
+Their simulation study aims to test the performance and statisitcal properties of the likelihood ratio test for model selection.
+The metircs that they use in assessment is the simulated significance level and the simulated power,
+
+
+2.What choices did the authors have to make in designing their simulation study? What are the key aspects of the data generating mechanism that likely affect the statistical power of the test? Are there
+data-generating scenarios that the authors did not consider that would be useful to consider?
+
+They had to decide 
+take which statement as null hypothesis and which statement as alternative one.
+what's the test statistics, and its substitution,
+what metrics to use in assessing theri method,
+what's the sample size, and parameters like the mixing proportion, value of the spacing D.
+
+
+3.Do their tables do a good job of presenting the simulation results and do you have any alternative suggestions for how to do this?
+
+I would say that if the author transposed table 2,3,4, it would be easier to compare the power with different D. And get a better idea about whether/how the mixed proportion influced the test results.
+
+
+
+4.Interpret their tables on power (Tables 2 and 4) - do the results make sense in terms of how the power varies as a function of the data generating mechanism?
+
+Table2 shows the simulated power of two statistics "2LR" and "2LR*" in testing a single normal versus a two-component normal mixture model. The results are based on different setting of mixing proportion, sample size, nominal level and the value of D. The trend of power can be explained as follows. As sample size grows and the nominal level grows, the power also grows. And as the number of components grows and they are well-separated, the power also grows.
+But as the author point out "There is no strong evidence that the power depends on the mixing proportion, although the power for \pi = 0.5 and \pi = 0.7 is somewhat higher than that for \pi = 0.9 when D = 3."
+
+Table4 shows the simulated power of two statistics "2LR" and "2LR*" in testing a mxiture of two normals versus a three-component normal mixture model. The results are based on different setting of mixing proportion, sample size, nominal level and the value of D. And the general trend of power is the same as in Table2. 
+
+
+
+5.How do you think the authors decided to use 1000 simulations. Would 10 simulations be enough? How might we decide if 1000 simulations is enough?
+
+It of course would be better if we can use more simulations. But 1000 simulations is good enough in most cases. I think 10 simulations are not enough.There would be huge deviation in the results. We may think that 1000 simulations is enough if we find out the results of simulations won't change a lot when the simulation times are around 1000. And sometimes, if the calculation involved is huge, the choice may be subject to the calculation power we have.
+
+
