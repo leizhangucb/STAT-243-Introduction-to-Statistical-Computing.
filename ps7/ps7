@@ -1,0 +1,240 @@
+%\documentstyle[12pt]{article}
+\documentclass[11pt]{article}%��ʾ�����ļ�������article
+\usepackage{indentfirst, latexsym, bm, amssymb, amsmath,booktabs,graphicx,subfigure,lastpage,fancyhdr}% ��Ҫ�õ���һЩ���ذ�
+
+\renewcommand{\baselinestretch}{1.21}%�����о�
+\topmargin  = -0.15 in \oddsidemargin = 0.25 in% ����ҳ�涥�������Ҿ���
+\setlength{\textheight}{8.6in} \setlength{\textwidth}{6in}%����ҳ��߶ȿ���
+\setlength{\unitlength}{1.0 mm}
+
+\pagestyle{fancy}%ʹ��ģ��fancy
+%\lhead{Team\#44001}%��ҳü
+\rhead{STAT 243}%��ҳü
+\begin{document}
+\title{STAT 243 PS7}
+\author{Lei Zhang}
+\maketitle
+\section{Problem 1}
+We can calculate the sample standard error based on the m estimates for the coefficient. And then we take the mean of the m standard error from all the simulation. We can then compare the two values and see if they are almost the same or not.
+
+\section{Problem 2}
+Since A is symmetric, we can write $A=\Gamma\Lambda\Gamma^{-1}$, where $\Gamma$ is an orthogonal matrix with the eigenvectors as the columns and $\Lambda$ is a diagonal matrix of eigenvalues $\Lambda_{ii}=\lambda_i$ .
+Then, we have
+\begin{eqnarray*}
+\parallel A\parallel_2&=& \sup_{z:\parallel z\parallel_2=1}\sqrt{(Az)^T(Az)}=\sup_{z:\parallel z\parallel_2=1}\sqrt{(z^TA^TAz)}=\sup_{z:\parallel z\parallel_2=1}\sqrt{z^T\Gamma\Lambda\Gamma^{-1}\Gamma\Lambda\Gamma^{-1}z}\\
+&=& \sup_{z:\parallel z\parallel_2=1}\sqrt{z^T\Gamma\Lambda^2\Gamma^{-1}z}= \sup_{z:\parallel z\parallel_2=1}\sqrt{(\Gamma^Tz)^T\Gamma^2(\Gamma^Tz)}
+\end{eqnarray*}
+
+We then set $y=\Gamma^Tz$, and note that
+$$\parallel y\parallel_2=\parallel \Gamma^Tz\parallel_2=y^Ty=z^T\Gamma\Gamma^Tz=z^Tz=\parallel z\parallel_2$$
+
+So we have,
+$$\parallel A\parallel_2=\sup_{y:\parallel y\parallel_2=1}\sqrt{y^T\Gamma^2y}=
+\left(
+  \begin{array}{ccc}
+    y_1 & .. & y_n \\
+  \end{array}
+\right)
+\left(
+  \begin{array}{ccc}
+    \lambda_1^2 & &  \\
+     & .. &  \\
+     &  & \lambda_n^2 \\
+  \end{array}
+\right)\left(\begin{array}{c}
+         y_1 \\
+         .. \\
+         y_n
+       \end{array}\right)
+$$
+
+Based on the fact that $\parallel y\parallel_2=1$ , we can conclude that
+$$\parallel A\parallel_2=\text{the largest of the absolute values of the eigenvalues of A}$$
+
+\section{Problem 3}
+\subsection{Problem a}
+Let $UDV^T$ be the Singular Value Decomposition of X, where
+
+$$X_{n\times p}=U_{n\times n}D_{k\times k}V^T_{k\times p}$$
+
+$$U_{n\times k}=(\mathbf{u_1},...\mathbf{u_k}), V_{p\times k}=(\mathbf{v_1},...,\mathbf{v_k}), D_{k\times k}=diag(\lambda_1,...,\lambda_k)$$
+
+We then have
+
+$$X^TX  =  (VD^TU^T)(UDV^T) = VD^TDV^T= V\left(
+  \begin{array}{ccc}
+    \lambda_1^2 & &  \\
+     & .. &  \\
+     &  & \lambda_k^2 \\
+  \end{array}
+\right)V^T$$
+\begin{eqnarray*}
+% \nonumber to remove numbering (before each equation)
+  (X^TX)\mathbf{v_i} &=& \left(\mathbf{v_1},...,\mathbf{v_k}\right)\left(
+  \begin{array}{ccc}
+    \lambda_1^2 & &  \\
+     & .. &  \\
+     &  & \lambda_k^2 \\
+  \end{array}
+\right)\left(
+               \begin{array}{c}
+                 \mathbf{v_1^T} \\
+                 .. \\
+                 \mathbf{v_k^T}\\
+               \end{array}
+             \right)\mathbf{v_i} \\
+   &=& \left(\mathbf{v_1},...,\mathbf{v_k}\right)\left(
+  \begin{array}{ccc}
+    \lambda_1^2 & &  \\
+     & .. &  \\
+     &  & \lambda_k^2 \\
+  \end{array}
+\right)\left(
+               \begin{array}{c}
+                 0 \\
+                 ..\\
+                 1 \\
+                 ..\\
+                 0\\
+               \end{array}
+             \right) \\
+   &=&\left(\mathbf{v_1},...,\mathbf{v_k}\right)\left(
+                                                  \begin{array}{c}
+                                                    0 \\
+                                                    .. \\
+                                                    \lambda^2_i \\
+                                                    .. \\
+                                                    0 \\
+                                                  \end{array}
+                                                \right)\\
+   &=& \lambda_i^2\mathbf{v_i}
+\end{eqnarray*}
+So we have showed that the right singular vector of $X$ are the eigenvectors of the matrix $X^TX$, and that the eigenvalues of $X^TX$ are the squares of the singular values of X.
+
+We then show that $X^TX$ is positive semi-definite.
+
+$$\forall a\in \mathbb{R}^{p}, a^T(X^TX)a=(Xa)^T(Xa)=\parallel Xa \parallel_2\geq 0$$
+
+\subsection{Problem b}
+Suppose the eigendecomposition of $\Sigma$ is $\Gamma^{-1}\Lambda\Gamma$. We then have $\forall i=1,...n$
+$$Z\Gamma_{\cdot i} = (\Sigma+cI)\Gamma_{\cdot i}= \Sigma\Gamma_{\cdot i}+c\Gamma_{\cdot i}=\lambda_i\Gamma_{\cdot i}+c\Gamma_{\cdot i}=(\lambda_i+c)\Gamma_{\cdot i}$$
+So the eigenvalues of $Z$ are $\lambda_i+c, i=1,...,n$, where $\lambda_i$ is the eigenvalue of $\Sigma$
+\section{Problem 4}
+\subsection{Problem a}
+As we prove in Problem 3, $X^X$, is positive semi-definite, and so is $AC^{-1}A^T$.
+The Pseudo-code is as follow,
+\begin{enumerate}
+  \item Perform the Cholesky Decomposition of $C=X^TX$. We can get $C=U^TU$ where $U$ is upper triangular.
+  \item Calculate $d=X^TY$. Note that it is better to perform multiplications involving vectors first as it may reduce the calculation.
+  \item Calculate $C^{-1}d$. Note that $C=U^TU$, so we can backsolve the equation to get $C^{-1}d=(U^TU)^{-1}d=U^{-1}(U^{T-1}b)$
+  \item Calculate $C^{-1}A^T$, $C^{-1}A^T=U^{-1}(U^{T-1}A^T)$
+  \item Calculate $-AC^{-1}d+b$ 
+  \item Calculate $(AC^{-1}A^T)^{-1}(-AC^{-1}d+b)$ using backsolve
+  \item Calculate $\hat{\beta}$ 
+\end{enumerate}
+\subsection{Problem b}
+<<>>=
+X <- matrix(c(1,0,0,2), nrow = 2, ncol = 2)
+Y <- matrix(c(10,11), nrow = 2)
+b <- matrix(2, nrow = 1, ncol = 1)
+A <- matrix(c(5,2), nrow =1, ncol = 2)
+calbetahat <- function(X,Y,b,A){
+  C <- crossprod(X)
+  #Perform Cholesky Decomposition of C
+  U1 <- chol(C)
+  d <- crossprod(X,Y)
+  #Backsolve to find C^{-1}d and C^{-1}t(A)
+  invC.d <- backsolve(U1, backsolve(U1, d, transpose = TRUE))
+  invC.At <- backsolve(U1,backsolve(U1, t(A), transpose=TRUE))
+  sumterm <- - A %*% invC.d + b
+  inverseterm <- A %*% invC.At
+  #Perform the Cholesky Decomposition again
+  U2 = chol(inverseterm)
+  #calculate betahat
+  betahat <- invC.d + invC.At %*% backsolve(U2,backsolve(U2, sumterm, transpose=TRUE))
+  return(betahat)
+}
+calbetahat(X,Y,b,A)
+@
+
+\section{Problem 5}
+\subsection{Problem a}
+It is because that $Z$, $X$ and $y$ are pretty large and the calculation is a bit complicated so we can hardly handle this without a huge amount of memory.
+
+\subsection{Problem b}
+\begin{eqnarray*}
+\hat{\beta}&=&(\hat{X}^T\hat{X})^{-1}\hat{X}^Ty\\
+&=&(X^TZ(Z^TZ)^{-1}Z^TX)^{-1}X^TZ(Z^TZ)^{-1}Z^Ty\\
+&=&(AX^{-1}Ay
+\end{eqnarray*}
+where $A=X^TZ(Z^TZ)^{-1}Z^T$
+
+The Pseudo-code is as follow,
+\begin{enumerate}
+  \item Perform the Cholesky Decomposition of $Z^TZ$. We can get $Z^TZ=U^TU$ where $U$ is upper triangular.
+  \item Calculate $(Z^TZ)^{-1}Z^T$. Note that we can backsolve twice to get the answer
+  \item Calculate $Ay$, note that although Z,X,y are pretty large,  $Ay$ is a $600\times 1$ vector.
+  \item Calculate $AX$, $AX$ is a $600\times 600$ matrix.
+  \item Calculate the Cholesky decomposition of AX, since $AX=X^TZ(Z^TZ)^{-1}Z^TX$ is positive definite
+  \item Backsolve twice to find $(AX)^{-1}Ay$, which is $\hat{\beta}$ 
+\end{enumerate}
+
+\section{Problem 6}
+Pseudo-code:
+\begin{enumerate}
+  \item Generate Z from rnorm. We then calculate matrix $A = Z^TZ$. A is symmetric, so we have the eigen vectors of $A$
+  \item Create a list of maximum positive eigenvalues, each of different magnitudes. 
+  \item In my case, I also set all other eigenvalues in a particular $\lambda$ matrix to be 1. Note that the condition number which is defined as is the ratio of the absolute values of the largest to
+smallest eigenvalue under $L_2$ norm
+$$c=\frac{|max_{1\leq i\leq n}\lambda_i|}{|min_{1\leq i\leq n }\lambda_i|}$$
+  is exactly the maximum eigenvalue.
+  \item Create  $\Gamma\Lambda\Gamma^T$ accordingly.
+  \item Calculate the error in the estimated eigenvalues relative to the known true values. 
+  $$Error=\parallel (trueVector-computedVector)\parallel_2$$
+\end{enumerate}
+
+We can see that the error between true eigenvalues and computed eigenvalues increases dramatically after the condition number goes beyond 1e15. Furthermore, we see that when the condiiton number is larger than 1e16, the matrix may not be numerically positive definite. We can see this from the fact that computed
+eigenvalues are not all strictly positive.
+
+<<eval=FALSE>>=
+n <- 100#matrix size
+Z <- matrix(rnorm(n^2), nrow = n, ncol = n)
+A <- crossprod(Z)
+eigen <- eigen(A)
+eigenVectors <- eigen$vectors
+# These are my condition numbers since my smallest eigenvalue is always 1
+maxEvalues <- c(0.1,1,10,100,1000,10000,1e5,1e6,1e7,
+1e8, 1e9, 1e10, 1e11, 1e12, 1e13, 1e14,1e15,1e16,1e17)
+error <- vector("list", length(maxEvalues))
+
+for (i in 1:length(maxEvalues)) {
+#Create the true lambda matrix, all the diagonal elements are one 
+#except the [1,1] element, which loop through the maxEvalue vector
+  Lambda <- diag(n)
+  Lambda[1,1] <- maxEvalues[i]
+  trueEvalues <- sort(diag(Lambda))
+#Calculate the new matrix \Gamma^T\Lambda\Gamma
+  M <- eigenVectors %*% Lambda %*% t(eigenVectors)
+#Computed eigenvalues
+  computedEvalues <- sort(eigen(M)$values)
+#print out the maximum eigenvalue when the matrix is not numerically
+  #positive definite
+  if (length(computedEvalues[computedEvalues <= 0]) != 0){
+    print(maxEvalues[i])
+  }
+  #Calculate the L2 norm of the error
+  error[i] = sum((trueEvalues - computedEvalues)^2)
+  i = i+1
+}
+##[1] 1e+16
+##[1] 1e+17
+library(ggplot2)
+data <- data.frame(conditionNum = maxEvalues, error=unlist(error))
+p1 <- ggplot(df, aes(conditionNum)) +
+geom_line(aes(y=error, colour = "Error")) +
+labs(x="Condition Number") +
+labs(y="Error") +
+labs(title="Condition Number and eigenValue Errors")
+print(p1)
+@
+\end{document}
